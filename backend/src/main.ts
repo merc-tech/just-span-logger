@@ -1,4 +1,9 @@
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 
@@ -17,6 +22,11 @@ async function bootstrap() {
       strategy: 'excludeAll',
     }),
   );
-  await app.listen(3000);
+  const logger = new Logger(bootstrap.name);
+  const config = app.get(ConfigService);
+  const port = config.get('PORT');
+  await app.listen(port, () => {
+    logger.log('Server listen on port ' + port);
+  });
 }
 bootstrap();
