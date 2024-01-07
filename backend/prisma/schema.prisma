@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  // PK
+  id Int @id @default(autoincrement())
+
+  name  String @unique
+  count Int
+
+  // Timestamp
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation
+  countPerTimeReports EventCountPerTimeReport[]
+  logs                EventLog[]
+}
+
+model EventLog {
+  // PK
+  id Int @id @default(autoincrement())
+
+  // FK
+  eventId Int
+
+  timestamp DateTime // client site timestamp for prevent network letancy
+
+  // Timestamp
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+enum TimeUnit {
+  MINUTE
+  HOUR
+  DAY
+  MONTH
+  YEAR
+}
+
+// For View how many event per minute
+model EventCountPerTimeReport {
+  // PK
+  id Int @id @default(autoincrement())
+
+  // FK
+  eventId Int
+
+  timeUnit  TimeUnit
+  timestamp DateTime // e.g. 	2024-01-07T03:50:00+0000, 024-01-07T03:51:00+0000 (every rows must mean 1 minute or hour belong to timeUnit columns)
+  count     Int
+
+  // Timestamp
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, timeUnit, timestamp])
+}

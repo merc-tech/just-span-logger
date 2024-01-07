@@ -1,0 +1,18 @@
+POST http://localhost:3000/events
+content-type: application/json
+
+{
+    "name": "sample",
+    "timestamp": "{{$datetime iso8601}}"
+}
+
+###
+POST http://localhost:3000/events/count-per-time-report
+content-type: application/json
+
+{
+    "name": "sample",
+    "timeUnit": ["MINUTE"],
+    "start": "{{$datetime iso8601 -10 m}}",
+    "end": "{{$datetime iso8601}}"
+}
