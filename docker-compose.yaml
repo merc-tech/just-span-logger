@@ -1,0 +1,18 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres:16
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: super_secrure
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+    environment:
+      PORT: 80
+      DATABASE_URL: "postgresql://postgres:super_secrure@db:5432/just-span-logger?schema=public"
